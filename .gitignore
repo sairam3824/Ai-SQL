@@ -20,3 +20,6 @@ apps/web/.next
 apps/web/node_modules
 apps/api/.venv
 packages/shared/dist
+.DS_Store
+**/.DS_Store
+*.tsbuildinfo
