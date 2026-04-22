@@ -1,0 +1,115 @@
+========================================
+  HOW TO RUN AI SQL COPILOT
+========================================
+
+PREREQUISITES
+  - Python 3.11+ (3.13 preferred)
+  - Node.js 18+ (20 preferred)
+  - npm (comes with Node.js)
+  - An OpenRouter API key (https://openrouter.ai)
+
+----------------------------------------
+OPTION 1: LOCAL DEVELOPMENT
+----------------------------------------
+
+Step 1: Configure environment
+  cp .env.example .env
+  # Edit .env and set: OPENROUTER_API_KEY=sk-or-v1-your-key-here
+
+Step 2: Install dependencies
+  make install-web
+  make install-api
+
+Step 3: Seed demo databases (optional but recommended)
+  make seed-demo
+
+Step 4: Start the backend (terminal 1)
+  make dev-api
+  # Runs at http://localhost:8000
+  # Swagger docs at http://localhost:8000/docs
+
+Step 5: Start the frontend (terminal 2)
+  make dev-web
+  # Runs at http://localhost:3000
+
+Step 6: Open http://localhost:3000 in your browser
+
+----------------------------------------
+OPTION 2: DOCKER (ALL-IN-ONE)
+----------------------------------------
+
+Step 1: Configure environment
+  cp .env.example .env
+  # Edit .env and set: OPENROUTER_API_KEY=sk-or-v1-your-key-here
+
+Step 2: Build and start
+  docker compose up --build
+
+  Frontend:  http://localhost:3000
+  Backend:   http://localhost:8000
+  Postgres:  localhost:5433
+
+Step 3: Stop
+  docker compose down        # stop containers
+  docker compose down -v     # stop + delete data volumes
+
+Override ports if needed:
+  WEB_PORT=3001 API_PORT=8001 docker compose up --build
+
+----------------------------------------
+DEMO FLOW
+----------------------------------------
+
+1. Run: make seed-demo
+2. Open http://localhost:3000
+3. Click "New Connection"
+4. Choose SQLite, upload apps/api/data/demo/sales_demo.sqlite
+5. Try these prompts:
+   - "Show monthly revenue for the last 12 months"
+   - "Who are the top 5 customers by total spend?"
+   - "Which products had the biggest drop in sales month over month?"
+6. Click "Run Query" to execute
+7. Click "Explain Plan" for performance insights
+8. Click "Suggest Indexes" for optimization tips
+
+----------------------------------------
+RUNNING TESTS
+----------------------------------------
+
+  make test-api
+
+----------------------------------------
+USEFUL COMMANDS
+----------------------------------------
+
+  make dev-api       Start backend in dev mode (hot reload)
+  make dev-web       Start frontend in dev mode (hot reload)
+  make start-api     Start backend in production mode
+  make seed-demo     Generate demo SQLite + DuckDB databases
+  make test-api      Run backend test suite
+  make install-web   Install frontend npm dependencies
+  make install-api   Install backend Python dependencies
+
+----------------------------------------
+TROUBLESHOOTING
+----------------------------------------
+
+Problem: "OPENROUTER_API_KEY is not set"
+  -> Edit .env and add your OpenRouter API key
+
+Problem: "Port already in use"
+  -> Either stop what's using the port, or override:
+     API_PORT=8001 make dev-api
+     WEB_PORT=3001 make dev-web
+
+Problem: Python version issues
+  -> The Makefile prefers python3.13, falls back to python3.11, then python3
+  -> Make sure at least Python 3.11 is installed
+
+Problem: npm install fails
+  -> Make sure you're in the project root (where package.json is)
+  -> Try: rm -rf node_modules && npm install
+
+Problem: Backend can't find demo databases
+  -> Run: make seed-demo
+  -> Files go to apps/api/data/demo/
