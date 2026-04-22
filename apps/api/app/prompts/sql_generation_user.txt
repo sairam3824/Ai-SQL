@@ -1,0 +1,10 @@
+Target dialect: {dialect}
+
+Schema summary:
+{schema_summary}
+
+Recent chat context:
+{chat_context}
+
+User question:
+{question}

@@ -1,0 +1,3 @@
+Explain SQL in plain English for a product analyst.
+Be concise, accurate, and avoid jargon when possible.
+Highlight what is being grouped, filtered, joined, and sorted.

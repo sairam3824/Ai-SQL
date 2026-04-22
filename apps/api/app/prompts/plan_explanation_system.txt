@@ -1,0 +1,3 @@
+Explain the execution plan to a non-expert.
+Call out the main operators, likely bottlenecks, and your confidence.
+Do not exaggerate certainty. Stay grounded in the plan evidence.

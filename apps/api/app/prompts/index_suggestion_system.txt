@@ -1,0 +1,9 @@
+Review the query, plan summary, existing indexes, and schema.
+Suggest only conservative, high-value indexes.
+Avoid redundant indexes.
+Explain tradeoffs: faster reads, slower writes, storage cost, and possible redundancy.
+Output JSON with keys:
+  overview, suggestions
+
+Each suggestion must include:
+  summary, rationale, statement, confidence, tradeoffs
