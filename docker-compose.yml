@@ -1,0 +1,59 @@
+services:
+  app-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ai_sql_copilot
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "${APP_DB_PORT:-5433}:5432"
+    volumes:
+      - app_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ai_sql_copilot"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_DATABASE_URL: postgresql+psycopg://postgres:postgres@app-db:5432/ai_sql_copilot
+      APP_STORAGE_DIR: /app/data
+      APP_CORS_ORIGINS: http://localhost:${WEB_PORT:-3000}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-openai/gpt-4.1-mini}
+      OPENROUTER_SUMMARY_MODEL: ${OPENROUTER_SUMMARY_MODEL:-openai/gpt-4.1-mini}
+      OPENROUTER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      OPENROUTER_SITE_URL: http://localhost:${WEB_PORT:-3000}
+      OPENROUTER_SITE_NAME: AI SQL Copilot
+      QUERY_TIMEOUT_SECONDS: 20
+      QUERY_DEFAULT_LIMIT: 200
+      QUERY_MAX_ROWS: 1000
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - api_data:/app/data
+    depends_on:
+      app-db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:${API_PORT:-8000}
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      - api
+
+volumes:
+  app_db_data:
+  api_data:
